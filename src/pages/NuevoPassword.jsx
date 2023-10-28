@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import clienteAxios from "../config/clienteAxios";
 import { Link, useParams } from "react-router-dom";
-import Alerta from "../components/Alerta";
+import Alerta from "../components/common/Alerta";
 
 const NuevoPassword = () => {
   const { token } = useParams();

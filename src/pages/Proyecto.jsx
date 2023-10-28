@@ -5,7 +5,7 @@ import Spinner from "../components/common/spinner";
 import ModalFormularioTarea from "../components/ModalFormularioTarea";
 import Tarea from "../components/Tarea";
 import { ModalEliminarTarea } from "../components/ModalEliminarTarea";
-import Alerta from "../components/Alerta";
+import Alerta from "../components/common/Alerta";
 
 const Proyecto = () => {
   const { id } = useParams();

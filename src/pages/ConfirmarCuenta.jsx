@@ -1,7 +1,7 @@
 import clienteAxios from "../config/clienteAxios";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Alerta from "../components/Alerta";
+import Alerta from "../components/common/Alerta";
 
 const ConfirmarCuenta = () => {
   const { id } = useParams();

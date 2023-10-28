@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useProyectos from "../hooks/useProyectos";
-import Alerta from "./Alerta";
+import Alerta from "../components/common/Alerta";
 import { useParams } from "react-router-dom";
 
 const FormularioProyectos = () => {

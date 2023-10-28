@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import Alerta from "../components/Alerta";
+import Alerta from "../components/common/Alerta";
 import clienteAxios from "../config/clienteAxios";
 const OlvidePassword = () => {
   const [email, setEmail] = useState("");

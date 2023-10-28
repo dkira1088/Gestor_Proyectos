@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Alerta from "../components/Alerta";
+import Alerta from "../components/common/Alerta";
 import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
 
