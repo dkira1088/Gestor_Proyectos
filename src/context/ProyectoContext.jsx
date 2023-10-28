@@ -11,6 +11,7 @@ const ProyectoProvider = ({ children }) => {
   const [proyecto, setProyecto] = useState({});
   const [cargando, setCargando] = useState(false);
   const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
+  const [modalEliminarTarea, setModalEliminarTarea] = useState(false);
   const [tarea, setTarea] = useState({});
   const navigate = useNavigate();
 
@@ -153,11 +154,14 @@ const ProyectoProvider = ({ children }) => {
     try {
       const { data } = await clienteAxios.post("/tareas", tarea, config);
 
+      setAlerta({ msg: "Se creó correctamente la tarea", error: false });
       const proyectoActualizado = { ...proyecto };
       proyectoActualizado.tareas = [...proyecto.tareas, data];
       setProyecto(proyectoActualizado);
-      setAlerta({});
       setModalFormularioTarea(false);
+
+      await delay(3000);
+      setAlerta({});
     } catch (error) {
       console.log(error);
     }
@@ -173,6 +177,7 @@ const ProyectoProvider = ({ children }) => {
         config
       );
 
+      setAlerta({ msg: "Se editó correctamente la tarea", error: false });
       const proyectoActualizado = { ...proyecto };
       proyectoActualizado.tareas = proyectoActualizado.tareas.map(
         (tareaState) => {
@@ -180,8 +185,10 @@ const ProyectoProvider = ({ children }) => {
         }
       );
       setProyecto(proyectoActualizado);
-      setAlerta({});
       setModalFormularioTarea(false);
+
+      await delay(3000);
+      setAlerta({});
     } catch (error) {
       console.log(error);
     }
@@ -190,6 +197,37 @@ const ProyectoProvider = ({ children }) => {
   const handleModalEditarTarea = (tarea) => {
     setTarea(tarea);
     setModalFormularioTarea(true);
+  };
+
+  const handleEliminarTarea = async (id) => {
+    const config = obtenerConfig();
+    if (!config) return;
+
+    try {
+      const { data } = await clienteAxios.delete(`/tareas/${id}`, config);
+
+      setAlerta({ msg: data.msg, error: false });
+
+      const proyectoActualizado = { ...proyecto };
+
+      proyectoActualizado.tareas = proyectoActualizado.tareas.filter(
+        (tareaState) => tareaState._id !== id
+      );
+
+      setProyecto(proyectoActualizado);
+      setModalEliminarTarea(false);
+      await delay(3000);
+      setAlerta({});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleModalEliminarTarea = (tarea) => {
+    if (tarea) {
+      setTarea(tarea);
+    }
+    setModalEliminarTarea(!modalEliminarTarea);
   };
 
   return (
@@ -201,6 +239,7 @@ const ProyectoProvider = ({ children }) => {
         cargando,
         modalFormularioTarea,
         tarea,
+        modalEliminarTarea,
         mostrarAlerta,
         submitProyecto,
         obtenerProyecto,
@@ -209,6 +248,8 @@ const ProyectoProvider = ({ children }) => {
         handleModalTarea,
         submitTarea,
         handleModalEditarTarea,
+        handleEliminarTarea,
+        handleModalEliminarTarea,
       }}
     >
       {children}

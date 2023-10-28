@@ -1,7 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import useProyectos from "../hooks/useProyectos";
-import Alerta from "./Alerta";
 import { useParams } from "react-router-dom";
 
 const PRIORIDAD = ["Baja", "Media", "Alta"];
@@ -11,7 +10,6 @@ const ModalFormularioTarea = () => {
     modalFormularioTarea,
     handleModalTarea,
     mostrarAlerta,
-    alerta,
     submitTarea,
     tarea,
   } = useProyectos();
@@ -21,7 +19,7 @@ const ModalFormularioTarea = () => {
   const [prioridad, setPrioridad] = useState("");
 
   useEffect(() => {
-    if (tarea._id) {
+    if (tarea?._id) {
       setNombre(tarea.nombre);
       setDescripcion(tarea.descripcion);
       setFechaEntrega(tarea.fechaEntrega.split("T")[0]);
@@ -59,9 +57,6 @@ const ModalFormularioTarea = () => {
     setFechaEntrega("");
     setPrioridad("");
   }
-
-  const { msg } = alerta;
-
   return (
     <Transition.Root show={modalFormularioTarea} as={Fragment}>
       <Dialog
@@ -128,9 +123,8 @@ const ModalFormularioTarea = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900"
                   >
-                    {tarea._id ? "Editar Tarea" : "Crear Tarea"}
+                    {tarea?._id ? "Editar Tarea" : "Crear Tarea"}
                   </Dialog.Title>
-                  {msg && <Alerta alerta={alerta} />}
                   <form className="my-10" onSubmit={handleSubmit}>
                     <div className="mb-5">
                       <label
@@ -201,7 +195,7 @@ const ModalFormularioTarea = () => {
                     <input
                       type="submit"
                       className="bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded"
-                      value={tarea._id ? "Editar Tarea" : "Crear Tarea"}
+                      value={tarea?._id ? "Editar Tarea" : "Crear Tarea"}
                     />
                   </form>
                 </div>

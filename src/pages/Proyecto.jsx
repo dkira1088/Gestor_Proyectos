@@ -4,22 +4,25 @@ import useProyectos from "../hooks/useProyectos";
 import Spinner from "../components/common/spinner";
 import ModalFormularioTarea from "../components/ModalFormularioTarea";
 import Tarea from "../components/Tarea";
+import { ModalEliminarTarea } from "../components/ModalEliminarTarea";
+import Alerta from "../components/Alerta";
 
 const Proyecto = () => {
   const { id } = useParams();
-  const { obtenerProyecto, proyecto, cargando, handleModalTarea } =
+  const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } =
     useProyectos();
   const { nombre, tareas } = proyecto;
 
   useEffect(() => {
     obtenerProyecto(id);
   }, []);
-
   return cargando ? (
     <Spinner />
   ) : (
     <>
+      {alerta.msg ? <Alerta alerta={alerta} /> : ""}
       <ModalFormularioTarea />
+      <ModalEliminarTarea />
       <div className="flex justify-between">
         <h1 className="font-black text-4xl">{nombre}</h1>
         <div className="flex items-center gap-2 text-gray-400 hover:text-black">
