@@ -8,14 +8,14 @@ const Tarea = ({ tarea }) => {
   const { handleModalEditarTarea, handleModalEliminarTarea } = useProyectos();
 
   return (
-    <div className="border-b p-5 flex justify-normal items-center">
-      <div>
+    <div className="border-b p-5 flex justify-normal items-center gap-1">
+      <div className="grow">
         <p className="mb-1 text-xl">{nombre}</p>
         <p className="mb-1 text-sm uppercase text-gray-500">{descripcion}</p>
         <p className="mb-1 text-xl">{prioridad}</p>
         <p className="mb-1 text-gray-500">{formatearFecha(fechaEntrega)}</p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <button
           className="bg-indigo-600 px-4 py-3 text-white uppercase text-sm rounded-lg"
           onClick={() => handleModalEditarTarea(tarea)}
