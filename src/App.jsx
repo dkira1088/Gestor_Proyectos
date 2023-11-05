@@ -1,17 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthProvider";
+import { ProyectoProvider } from "./context/ProyectoContext";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Registrar from "./pages/Registrar";
 import OlvidePassword from "./pages/OlvidePassword";
 import NuevoPassword from "./pages/NuevoPassword";
 import ConfirmarCuenta from "./pages/ConfirmarCuenta";
-import { AuthProvider } from "./context/AuthProvider";
 import RutaProtegida from "./layouts/RutaProtegida";
 import Proyectos from "./pages/Proyectos";
 import NuevoProyecto from "./pages/NuevoProyecto";
-import { ProyectoProvider } from "./context/ProyectoContext";
 import Proyecto from "./pages/Proyecto";
 import EditarProyecto from "./pages/EditarProyecto";
+import NuevoColaborador from "./components/NuevoColaborador";
 
 function App() {
   return (
@@ -32,6 +33,10 @@ function App() {
             <Route path="/proyectos" element={<RutaProtegida />}>
               <Route index element={<Proyectos />} />
               <Route path="crear-proyecto" element={<NuevoProyecto />} />
+              <Route
+                path="nuevo-colaborador/:id"
+                element={<NuevoColaborador />}
+              />
               <Route path=":id" element={<Proyecto />} />
               <Route path="editar/:id" element={<EditarProyecto />} />
             </Route>

@@ -13,6 +13,7 @@ const ProyectoProvider = ({ children }) => {
   const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
   const [modalEliminarTarea, setModalEliminarTarea] = useState(false);
   const [tarea, setTarea] = useState({});
+  const [colaborador, setColaborador] = useState({});
   const navigate = useNavigate();
 
   const obtenerConfig = () => {
@@ -230,6 +231,32 @@ const ProyectoProvider = ({ children }) => {
     setModalEliminarTarea(!modalEliminarTarea);
   };
 
+  const submitColaborador = async (email) => {
+    const config = obtenerConfig();
+    if (!config) return;
+
+    setCargando(true);
+    try {
+      const { data } = await clienteAxios.post(
+        "/proyectos/colaboradores",
+        {
+          email,
+        },
+        config
+      );
+
+      console.log(data);
+      setColaborador(data);
+      setAlerta({});
+    } catch (error) {
+      setAlerta({
+        msg: error.response.data.msg,
+        error: true,
+      });
+    } finally {
+      setCargando(false);
+    }
+  };
   return (
     <ProyetoContext.Provider
       value={{
@@ -240,6 +267,7 @@ const ProyectoProvider = ({ children }) => {
         modalFormularioTarea,
         tarea,
         modalEliminarTarea,
+        colaborador,
         mostrarAlerta,
         submitProyecto,
         obtenerProyecto,
@@ -250,6 +278,7 @@ const ProyectoProvider = ({ children }) => {
         handleModalEditarTarea,
         handleEliminarTarea,
         handleModalEliminarTarea,
+        submitColaborador,
       }}
     >
       {children}
