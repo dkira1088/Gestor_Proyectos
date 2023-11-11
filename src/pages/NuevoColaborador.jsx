@@ -1,15 +1,23 @@
 import { useEffect } from "react";
-import FormularioColaborador from "./FormularioColaborador";
+import FormularioColaborador from "../components/FormularioColaborador";
 import useProyectos from "../hooks/useProyectos";
 import { useParams } from "react-router-dom";
-import Spinner from "./common/spinner";
+import Spinner from "../components/common/spinner";
 
 const NuevoColaborador = () => {
-  const { obtenerProyecto, proyecto, cargando, colaborador } = useProyectos();
+  const {
+    obtenerProyecto,
+    proyecto,
+    cargando,
+    colaborador,
+    agregarColaborador,
+    setColaborador,
+  } = useProyectos();
 
   const { id } = useParams();
   useEffect(() => {
     obtenerProyecto(id);
+    setColaborador({});
   }, []);
 
   return (
@@ -34,6 +42,11 @@ const NuevoColaborador = () => {
                 <button
                   type="button"
                   className=" bg-slate-500 px-5 py-2 rounded-lg uppercase text-white font-bold text-sm"
+                  onClick={() =>
+                    agregarColaborador({
+                      email: colaborador.email,
+                    })
+                  }
                 >
                   Agregar al proyecto
                 </button>

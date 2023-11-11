@@ -12,7 +12,7 @@ import Proyectos from "./pages/Proyectos";
 import NuevoProyecto from "./pages/NuevoProyecto";
 import Proyecto from "./pages/Proyecto";
 import EditarProyecto from "./pages/EditarProyecto";
-import NuevoColaborador from "./components/NuevoColaborador";
+import NuevoColaborador from "./pages/NuevoColaborador";
 
 function App() {
   return (

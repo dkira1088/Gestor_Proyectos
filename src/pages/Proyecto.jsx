@@ -6,13 +6,15 @@ import ModalFormularioTarea from "../components/ModalFormularioTarea";
 import Tarea from "../components/Tarea";
 import { ModalEliminarTarea } from "../components/ModalEliminarTarea";
 import Alerta from "../components/common/Alerta";
+import Colaborador from "../components/Colaborador";
+import { ModalEliminarColaborador } from "../components/ModalEliminarColaborador";
 
 const Proyecto = () => {
   const { id } = useParams();
   const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } =
     useProyectos();
-  const { nombre, tareas } = proyecto;
-
+  const { nombre, tareas, colaboradores } = proyecto;
+  console.log(proyecto);
   useEffect(() => {
     obtenerProyecto(id);
   }, []);
@@ -23,6 +25,7 @@ const Proyecto = () => {
       {alerta.msg ? <Alerta alerta={alerta} /> : ""}
       <ModalFormularioTarea />
       <ModalEliminarTarea />
+      <ModalEliminarColaborador />
       <div className="flex justify-between">
         <h1 className="font-black text-4xl">{nombre}</h1>
         <div className="flex items-center gap-2 text-gray-400 hover:text-black">
@@ -67,9 +70,7 @@ const Proyecto = () => {
       <p className="font-bold text-xl mt-10">Tareas del Proyecto</p>
       <div className="bg-white shadow mt-10 rounded-lg">
         {tareas?.length > 0 ? (
-          proyecto.tareas.map((tarea) => (
-            <Tarea key={tarea._id} tarea={tarea} />
-          ))
+          tareas.map((tarea) => <Tarea key={tarea._id} tarea={tarea} />)
         ) : (
           <p className="px-2 py-5">No hay tareas</p>
         )}
@@ -82,6 +83,15 @@ const Proyecto = () => {
         >
           Añadir
         </Link>
+      </div>
+      <div className="bg-white shadow mt-10 rounded-lg">
+        {colaboradores?.length > 0 ? (
+          colaboradores.map((colaborador) => (
+            <Colaborador key={colaborador._id} colaborador={colaborador} />
+          ))
+        ) : (
+          <p className="px-2 py-5">No hay colaboradores</p>
+        )}
       </div>
     </>
   );
