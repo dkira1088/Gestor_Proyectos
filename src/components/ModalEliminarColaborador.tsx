@@ -14,7 +14,7 @@ export const ModalEliminarColaborador = () => {
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        onClose={handleModalEliminarColaborador}
+        onClose={()=>handleModalEliminarColaborador}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -51,7 +51,7 @@ export const ModalEliminarColaborador = () => {
                 <button
                   type="button"
                   className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => handleModalEliminarColaborador()}
+                  onClick={() => handleModalEliminarColaborador(colaborador)}
                 >
                   <span className="sr-only">Cerrar</span>
                   <svg
@@ -101,7 +101,7 @@ export const ModalEliminarColaborador = () => {
                 <button
                   className="bg-gray-100 px-4 py-3 text-black uppercase text-sm rounded-lg hover:bg-gray-200 transition-colors border border-gray-300"
                   onClick={() => {
-                    handleModalEliminarColaborador();
+                    handleModalEliminarColaborador(colaborador);
                   }}
                 >
                   Cancelar

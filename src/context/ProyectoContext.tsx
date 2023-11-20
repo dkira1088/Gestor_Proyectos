@@ -1,19 +1,77 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import clienteAxios from "../config/clienteAxios";
-import { useNavigate } from "react-router-dom";
+import { ErrorResponse, useNavigate } from "react-router-dom";
 import delay from "../helpers/delayHelper";
-const ProyetoContext = createContext();
+import { Alerta, Props } from "../types/CommonTypes";
+import { Proyecto } from "../types/Proyectos";
+import { Tarea } from "../types/Tareas";
+import { Usuario } from "../types/Usuarios";
+import axios, {AxiosError} from "axios";
 
-// eslint-disable-next-line react/prop-types
-const ProyectoProvider = ({ children }) => {
-  const [proyectos, setProyectos] = useState([]);
-  const [alerta, setAlerta] = useState({});
-  const [proyecto, setProyecto] = useState({});
-  const [cargando, setCargando] = useState(false);
-  const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
-  const [modalEliminarTarea, setModalEliminarTarea] = useState(false);
-  const [tarea, setTarea] = useState({});
-  const [colaborador, setColaborador] = useState({});
+interface ContextState {
+  proyectos: Array<Proyecto>
+  alerta: Alerta
+  proyecto: Proyecto 
+  cargando: boolean
+  modalFormularioTarea:boolean
+  tarea: Tarea,
+  modalEliminarTarea: boolean
+  colaborador: Usuario 
+  modalEliminarColaborador: boolean
+  mostrarAlerta: (alerta: Alerta) => Promise<void>
+  submitProyecto: (proyecto: Proyecto) => Promise<void>
+  obtenerProyecto: (id: string) => Promise<void>
+  eliminarProyecto: (id: string) => Promise<void>
+  setProyectos: React.Dispatch<React.SetStateAction<Proyecto[]>>
+  handleModalTarea : () => void
+  submitTarea: (tarea: Tarea) => Promise<void>
+  handleModalEditarTarea: (tarea: Tarea) => void
+  handleEliminarTarea: (id: string) => Promise<void>,
+  handleModalEliminarTarea: (tarea: Tarea) => void,
+  submitColaborador: (email: string) => Promise<void>
+  agregarColaborador:(email: string) => Promise<void>,
+  handleModalEliminarColaborador: (colaborador: Usuario) => void
+  handleEliminarColaborador: (id: string) => Promise<void>,
+  setColaborador: React.Dispatch<React.SetStateAction<Usuario>>
+}
+
+const INITIAL_VALUES = {
+  colaborador:{
+    confirmado:false,
+    email:'',
+    nombre:'',
+    _id: '',
+    password: '',
+    token: ''
+  },
+  proyecto: {
+    descripcion:'',
+    fechaEntrega: new Date,
+    nombre:'',
+    cliente:''
+    },
+  tarea: {
+    _id:'',
+    descripcion: '',
+    estado: false,
+    fechaEntrega: new Date,
+    nombre: '',
+    prioridad: '',
+    proyecto: ''
+  }
+}
+
+const ProyetoContext = createContext<ContextState|undefined>(undefined);
+
+const ProyectoProvider:  React.FC<Props> =  ({ children }) => {
+  const [proyectos, setProyectos] = useState<Array<Proyecto>>([]);
+  const [alerta, setAlerta] = useState<Alerta>({});
+  const [proyecto, setProyecto] = useState<Proyecto>(INITIAL_VALUES.proyecto);
+  const [cargando, setCargando] = useState<boolean>(false);
+  const [modalFormularioTarea, setModalFormularioTarea] = useState<boolean>(false);
+  const [modalEliminarTarea, setModalEliminarTarea] = useState<boolean>(false);
+  const [tarea, setTarea] = useState<Tarea>(INITIAL_VALUES.tarea);
+  const [colaborador, setColaborador] = useState<Usuario>(INITIAL_VALUES.colaborador);
   const [modalEliminarColaborador, setModalEliminarColaborador] =
     useState(false);
   const navigate = useNavigate();
@@ -31,19 +89,19 @@ const ProyectoProvider = ({ children }) => {
     return config;
   };
 
-  const mostrarAlerta = async (alerta) => {
+  const mostrarAlerta = async (alerta: Alerta) => {
     setAlerta(alerta);
     await delay(3000);
     setAlerta({});
   };
 
-  const editarProyecto = async (proyecto) => {
+  const editarProyecto = async (proyecto:Proyecto) => {
     try {
       const config = obtenerConfig();
       if (!config) return;
 
       const { data } = await clienteAxios.put(
-        `/proyectos/${proyecto.id}`,
+        `/proyectos/${proyecto._id}`,
         proyecto,
         config
       );
@@ -68,7 +126,7 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const crearProyecto = async (proyecto) => {
+  const crearProyecto = async (proyecto:Proyecto) => {
     try {
       const config = obtenerConfig();
       if (!config) return;
@@ -86,7 +144,7 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const eliminarProyecto = async (id) => {
+  const eliminarProyecto = async (id:string) => {
     try {
       const config = obtenerConfig();
       if (!config) return;
@@ -109,15 +167,15 @@ const ProyectoProvider = ({ children }) => {
       console.log(error);
     }
   };
-  const submitProyecto = async (proyecto) => {
-    if (proyecto.id) {
+  const submitProyecto = async (proyecto:Proyecto) => {
+    if (proyecto._id) {
       await editarProyecto(proyecto);
     } else {
       await crearProyecto(proyecto);
     }
   };
 
-  const obtenerProyecto = async (id) => {
+  const obtenerProyecto = async (id:string) => {
     try {
       const config = obtenerConfig();
       if (!config) return;
@@ -136,12 +194,12 @@ const ProyectoProvider = ({ children }) => {
 
   const handleModalTarea = () => {
     setModalFormularioTarea(!modalFormularioTarea);
-    setTarea("");
+    setTarea(INITIAL_VALUES.tarea);
   };
 
-  const submitTarea = async (tarea) => {
+  const submitTarea = async (tarea: Tarea) => {
     try {
-      if (tarea.id) {
+      if (tarea._id) {
         await editarTarea(tarea);
       } else {
         await crearTarea(tarea);
@@ -151,15 +209,15 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const crearTarea = async (tarea) => {
+  const crearTarea = async (tarea:Tarea) => {
     const config = obtenerConfig();
     if (!config) return;
     try {
-      const { data } = await clienteAxios.post("/tareas", tarea, config);
+      const { data } = await clienteAxios.post<Tarea>("/tareas", tarea, config);
 
       setAlerta({ msg: "Se creó correctamente la tarea", error: false });
       const proyectoActualizado = { ...proyecto };
-      proyectoActualizado.tareas = [...proyecto.tareas, data];
+      proyectoActualizado.tareas = [...(proyecto.tareas || []), data];
       setProyecto(proyectoActualizado);
       setModalFormularioTarea(false);
 
@@ -170,19 +228,19 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const editarTarea = async (tarea) => {
+  const editarTarea = async (tarea:Tarea) => {
     const config = obtenerConfig();
     if (!config) return;
     try {
       const { data } = await clienteAxios.put(
-        `/tareas/${tarea.id}`,
+        `/tareas/${tarea._id}`,
         tarea,
         config
       );
 
       setAlerta({ msg: "Se editó correctamente la tarea", error: false });
       const proyectoActualizado = { ...proyecto };
-      proyectoActualizado.tareas = proyectoActualizado.tareas.map(
+      proyectoActualizado.tareas = proyectoActualizado.tareas?.map(
         (tareaState) => {
           return tareaState._id === data._id ? data : tareaState;
         }
@@ -197,12 +255,12 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const handleModalEditarTarea = (tarea) => {
+  const handleModalEditarTarea = (tarea: Tarea) => {
     setTarea(tarea);
     setModalFormularioTarea(true);
   };
 
-  const handleEliminarTarea = async (id) => {
+  const handleEliminarTarea = async (id:string) => {
     const config = obtenerConfig();
     if (!config) return;
 
@@ -213,7 +271,7 @@ const ProyectoProvider = ({ children }) => {
 
       const proyectoActualizado = { ...proyecto };
 
-      proyectoActualizado.tareas = proyectoActualizado.tareas.filter(
+      proyectoActualizado.tareas = proyectoActualizado.tareas?.filter(
         (tareaState) => tareaState._id !== id
       );
 
@@ -226,22 +284,22 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const handleModalEliminarTarea = (tarea) => {
+  const handleModalEliminarTarea = (tarea:Tarea) => {
     if (tarea) {
       setTarea(tarea);
     }
     setModalEliminarTarea(!modalEliminarTarea);
   };
 
-  const handleModalEliminarColaborador = (colaborador) => {
+  const handleModalEliminarColaborador = (colaborador: Usuario) => {
     console.log(colaborador);
-    if (colaborador) {
+    if (colaborador !== undefined) {
       setColaborador(colaborador);
     }
     setModalEliminarColaborador(!modalEliminarColaborador);
   };
 
-  const submitColaborador = async (email) => {
+  const submitColaborador = async (email:string) => {
     const config = obtenerConfig();
     if (!config) return;
 
@@ -257,10 +315,20 @@ const ProyectoProvider = ({ children }) => {
 
       setColaborador(data);
     } catch (error) {
-      setAlerta({
-        msg: error.response.data.msg,
-        error: true,
-      });
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
+
+ 
     } finally {
       setCargando(false);
       await delay(10000);
@@ -268,7 +336,7 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const agregarColaborador = async (email) => {
+  const agregarColaborador = async (email:string) => {
     const config = obtenerConfig();
     if (!config) return;
 
@@ -276,7 +344,7 @@ const ProyectoProvider = ({ children }) => {
     try {
       const { data } = await clienteAxios.post(
         `/proyectos/colaboradores/${proyecto._id}`,
-        email,
+        {email},
         config
       );
 
@@ -285,13 +353,21 @@ const ProyectoProvider = ({ children }) => {
         error: false,
       });
 
-      setColaborador({});
+      setColaborador(INITIAL_VALUES.colaborador);
     } catch (error) {
+      
       console.log(error);
-      setAlerta({
-        msg: error.response.data.msg,
-        error: true,
-      });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
     } finally {
       setCargando(false);
       await delay(10000);
@@ -299,7 +375,7 @@ const ProyectoProvider = ({ children }) => {
     }
   };
 
-  const handleEliminarColaborador = async (id) => {
+  const handleEliminarColaborador = async (id:string) => {
     const config = obtenerConfig();
     if (!config) return;
     try {
@@ -312,7 +388,7 @@ const ProyectoProvider = ({ children }) => {
 
       proyectoActualizado.colaboradores =
         proyectoActualizado.colaboradores.filter(
-          (colaboradorState) => colaboradorState._id !== id
+          (colaboradorState: Usuario) => colaboradorState._id !== id
         );
 
       setProyecto(proyectoActualizado);
@@ -322,7 +398,17 @@ const ProyectoProvider = ({ children }) => {
       });
     } catch (error) {
       console.log(error);
-      setAlerta({ msg: error.response.data.msg, error: true });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
     } finally {
       setModalEliminarColaborador(false);
       await delay(10000);
@@ -366,3 +452,5 @@ const ProyectoProvider = ({ children }) => {
 export { ProyectoProvider };
 
 export default ProyetoContext;
+
+ 

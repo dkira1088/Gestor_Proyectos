@@ -1,18 +1,20 @@
 import { Fragment, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { ErrorResponse, Link, useNavigate } from "react-router-dom";
 import Alerta from "../components/common/Alerta";
 import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
+import axios, {AxiosError} from "axios";
+import { Alerta as AlertType } from "../types/CommonTypes";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alerta, setAlerta] = useState({});
+  const [alerta, setAlerta] = useState<AlertType>({});
 
   const { setAuth } = useAuth();
 
   const navigate = useNavigate();
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if ([email, password].includes("")) {
@@ -35,10 +37,17 @@ const Login = () => {
       setAuth(data);
       navigate("/proyectos");
     } catch (error) {
-      setAlerta({
-        msg: error.response.data.msg,
-        error: true,
-      });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
     }
   };
 

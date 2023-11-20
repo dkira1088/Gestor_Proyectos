@@ -1,11 +1,13 @@
 import clienteAxios from "../config/clienteAxios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { ErrorResponse, Link, useParams } from "react-router-dom";
 import Alerta from "../components/common/Alerta";
+import axios, { AxiosError } from "axios";
+import { Alerta as AlertType } from "../types/CommonTypes";
 
 const ConfirmarCuenta = () => {
   const { id } = useParams();
-  const [alerta, setAlerta] = useState({});
+  const [alerta, setAlerta] = useState<AlertType>({});
   const [cuentaConfirmada, setCuentaConfirmada] = useState(false);
 
   useEffect(() => {
@@ -19,10 +21,17 @@ const ConfirmarCuenta = () => {
         });
         setCuentaConfirmada(true);
       } catch (error) {
-        setAlerta({
-          msg: error.response.data.msg,
-          error: true,
-        });
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError<ErrorResponse>;
+          if (axiosError.response) {
+            setAlerta({
+              msg: error?.response?.data.msg,
+              error: true,
+            });
+          }
+        } else {
+          console.error('Generic Error:', error);
+        }
       }
     };
     confirmarCuenta();

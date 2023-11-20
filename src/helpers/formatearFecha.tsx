@@ -1,6 +1,7 @@
-export const formatearFecha = (fecha) => {
-  const nuevaFecha = new Date(fecha.split("T")[0].split("-"));
-  const opciones = {
+export const formatearFecha = (fecha: string) => {
+  const nuevaFecha = new Date(fecha);
+  
+  const opciones: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
     month: "long",

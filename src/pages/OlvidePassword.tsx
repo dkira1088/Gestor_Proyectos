@@ -1,12 +1,15 @@
-import { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState } from "react";
+import { ErrorResponse, Link } from "react-router-dom";
 import Alerta from "../components/common/Alerta";
 import clienteAxios from "../config/clienteAxios";
+import axios, { AxiosError } from "axios";
+import { Alerta as AlertType } from "../types/CommonTypes";
+
 const OlvidePassword = () => {
   const [email, setEmail] = useState("");
-  const [alerta, setAlerta] = useState({});
+  const [alerta, setAlerta] = useState<AlertType>({});
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email === "" || email.length < 6) {
       setAlerta({ msg: "El email es obligatorio", error: true });
@@ -20,7 +23,17 @@ const OlvidePassword = () => {
 
       setAlerta({ msg: data.msg, error: false });
     } catch (error) {
-      setAlerta({ msg: error.response.data.msg, error: true });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
     }
   };
 

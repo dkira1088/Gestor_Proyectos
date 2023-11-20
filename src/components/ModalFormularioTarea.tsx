@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import useProyectos from "../hooks/useProyectos";
 import { useParams } from "react-router-dom";
 
@@ -22,16 +22,17 @@ const ModalFormularioTarea = () => {
     if (tarea?._id) {
       setNombre(tarea.nombre);
       setDescripcion(tarea.descripcion);
-      setFechaEntrega(tarea.fechaEntrega.split("T")[0]);
+      setFechaEntrega(tarea.fechaEntrega.toString());
       setPrioridad(tarea.prioridad);
       return;
     }
     resetearFormulario();
   }, [tarea]);
+  
   //Id del proyecto
   const { id } = useParams();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:React.FormEvent) => {
     e.preventDefault();
     if ([nombre, descripcion, prioridad, fechaEntrega].includes("")) {
       mostrarAlerta({
@@ -40,13 +41,15 @@ const ModalFormularioTarea = () => {
       });
       return;
     }
+    const fecha = new Date(fechaEntrega);
+
     submitTarea({
       nombre,
       descripcion,
       prioridad,
-      fechaEntrega,
+      fechaEntrega: fecha,
       proyecto: id,
-      id: tarea._id,
+      _id: tarea._id
     });
     resetearFormulario();
   };
@@ -76,8 +79,6 @@ const ModalFormularioTarea = () => {
           >
             <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
-
-          {/* This element is to trick the browser into centering the modal contents. */}
           <span
             className="hidden sm:inline-block sm:align-middle sm:h-screen"
             aria-hidden="true"
@@ -154,7 +155,7 @@ const ModalFormularioTarea = () => {
                         type="date"
                         placeholder="Fecha Entrega"
                         className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-                        value={fechaEntrega}
+                        value={fechaEntrega.toString()}
                         onChange={(e) => setFechaEntrega(e.target.value)}
                       />
                     </div>

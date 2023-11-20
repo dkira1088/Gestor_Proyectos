@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import useProyectos from "../hooks/useProyectos";
-import Spinner from "../components/common/spinner";
+import Spinner from "../components/common/Spinner";
 import ModalFormularioTarea from "../components/ModalFormularioTarea";
 import Tarea from "../components/Tarea";
 import { ModalEliminarTarea } from "../components/ModalEliminarTarea";
 import Alerta from "../components/common/Alerta";
 import Colaborador from "../components/Colaborador";
 import { ModalEliminarColaborador } from "../components/ModalEliminarColaborador";
+import { Usuario } from "../types/Usuarios";
 
 const Proyecto = () => {
   const { id } = useParams();
@@ -15,8 +16,12 @@ const Proyecto = () => {
     useProyectos();
   const { nombre, tareas, colaboradores } = proyecto;
   console.log(proyecto);
+
+
   useEffect(() => {
-    obtenerProyecto(id);
+    if(id) {
+      obtenerProyecto(id);
+    }
   }, []);
   return cargando ? (
     <Spinner />
@@ -69,11 +74,11 @@ const Proyecto = () => {
       </button>
       <p className="font-bold text-xl mt-10">Tareas del Proyecto</p>
       <div className="bg-white shadow mt-10 rounded-lg">
-        {tareas?.length > 0 ? (
+        {tareas != undefined? tareas?.length > 0 ? (
           tareas.map((tarea) => <Tarea key={tarea._id} tarea={tarea} />)
         ) : (
           <p className="px-2 py-5">No hay tareas</p>
-        )}
+        ):<></>}
       </div>
       <div className="flex items-center justify-between mt-10">
         <p className="font-bold text-xl mt-10">Colaboradores</p>
@@ -86,7 +91,7 @@ const Proyecto = () => {
       </div>
       <div className="bg-white shadow mt-10 rounded-lg">
         {colaboradores?.length > 0 ? (
-          colaboradores.map((colaborador) => (
+          colaboradores.map((colaborador: Usuario) => (
             <Colaborador key={colaborador._id} colaborador={colaborador} />
           ))
         ) : (

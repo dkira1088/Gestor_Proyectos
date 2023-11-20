@@ -5,9 +5,10 @@ import Alerta from "./common/Alerta";
 const FormularioColaborador = () => {
   const [email, setEmail] = useState("");
   const { mostrarAlerta, alerta, submitColaborador } = useProyectos();
+  
   const { msg } = alerta;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e : React.FormEvent) => {
     e.preventDefault();
     if (email === "") {
       mostrarAlerta({

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useProyectos from "../hooks/useProyectos";
-import Alerta from "../components/common/Alerta";
+import Alerta from "./common/Alerta";
 import { useParams } from "react-router-dom";
 
 const FormularioProyectos = () => {
@@ -8,7 +8,7 @@ const FormularioProyectos = () => {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [fechaEntrega, setFechaEntrega] = useState("");
-  const [cliente, setCliente] = useState("");
+  const [cliente, setCliente] = useState('');
 
   const { mostrarAlerta, alerta, submitProyecto, proyecto } = useProyectos();
 
@@ -16,12 +16,12 @@ const FormularioProyectos = () => {
     if (id) {
       setNombre(proyecto.nombre);
       setDescripcion(proyecto.descripcion);
-      setFechaEntrega(proyecto.fechaEntrega.split("T")[0]);
+      setFechaEntrega(proyecto.fechaEntrega.toString());
       setCliente(proyecto.cliente);
     }
   }, [id]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
 
     if ([nombre, descripcion, fechaEntrega, cliente].includes("")) {
@@ -33,8 +33,9 @@ const FormularioProyectos = () => {
       return;
     }
 
+    const fecha = new Date(fechaEntrega);
     //pasar datos al provider
-    await submitProyecto({ id, nombre, descripcion, fechaEntrega, cliente });
+    await submitProyecto({ _id :  id, nombre, descripcion, fechaEntrega: fecha , cliente});
 
     setCliente("");
     setDescripcion("");
@@ -92,7 +93,7 @@ const FormularioProyectos = () => {
           id="fecha-entrega"
           type="date"
           className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-          value={fechaEntrega}
+          value={fechaEntrega.toString()}
           onChange={(e) => setFechaEntrega(e.target.value)}
         />
       </div>

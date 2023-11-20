@@ -1,12 +1,14 @@
 import { Fragment, useEffect, useState } from "react";
 import clienteAxios from "../config/clienteAxios";
-import { Link, useParams } from "react-router-dom";
+import { ErrorResponse, Link, useParams } from "react-router-dom";
 import Alerta from "../components/common/Alerta";
+import axios, { AxiosError } from "axios";
+import { Alerta as AlertType } from "../types/CommonTypes";
 
 const NuevoPassword = () => {
   const { token } = useParams();
   const [password, setPassword] = useState("");
-  const [alerta, setAlerta] = useState({});
+  const [alerta, setAlerta] = useState<AlertType>({});
   const [tokenValido, setTokenValido] = useState(false);
   const [passwordModificado, setPasswordModificado] = useState(false);
 
@@ -17,17 +19,24 @@ const NuevoPassword = () => {
 
         setTokenValido(true);
       } catch (error) {
-        setAlerta({
-          msg: error.response.data.msg,
-          error: true,
-        });
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError<ErrorResponse>;
+          if (axiosError.response) {
+            setAlerta({
+              msg: error?.response?.data.msg,
+              error: true,
+            });
+          }
+        } else {
+          console.error('Generic Error:', error);
+        }
       }
     };
 
     comprobarToken();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password.length < 6) {
@@ -52,10 +61,17 @@ const NuevoPassword = () => {
 
       setPasswordModificado(true);
     } catch (error) {
-      setAlerta({
-        msg: error.response.data.msg,
-        error: true,
-      });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response) {
+          setAlerta({
+            msg: error?.response?.data.msg,
+            error: true,
+          });
+        }
+      } else {
+        console.error('Generic Error:', error);
+      }
     }
   };
 

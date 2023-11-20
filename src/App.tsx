@@ -14,7 +14,7 @@ import Proyecto from "./pages/Proyecto";
 import EditarProyecto from "./pages/EditarProyecto";
 import NuevoColaborador from "./pages/NuevoColaborador";
 
-function App() {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -28,7 +28,7 @@ function App() {
                 path="olvide-password/:token"
                 element={<NuevoPassword />}
               />
-              <Route exact path="confirmar/:id" element={<ConfirmarCuenta />} />
+              <Route path="confirmar/:id" element={<ConfirmarCuenta/>} />
             </Route>
             <Route path="/proyectos" element={<RutaProtegida />}>
               <Route index element={<Proyectos />} />

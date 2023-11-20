@@ -1,11 +1,32 @@
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import clienteAxios from "../config/clienteAxios";
 import { useNavigate } from "react-router-dom";
+import { Usuario } from "../types/Usuarios";
+import { Props } from "../types/CommonTypes";
 
-const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
+interface ContextState {
+  auth: Usuario,
+  cargando: boolean,
+  setAuth: React.Dispatch<React.SetStateAction<Usuario>>
+}
+
+const INITIAL_VALUES = {
+  usuario:{
+    confirmado:false,
+    email:'',
+    nombre:'',
+    _id: '',
+    password: '',
+    token: ''
+  }
+}
+
+
+const AuthContext = createContext<ContextState|undefined>(undefined);
+
+const AuthProvider: React.FC<Props> = ({ children }) => {
+  const [auth, setAuth] = useState<Usuario>(INITIAL_VALUES.usuario);
   const [cargando, setCargando] = useState(true);
 
   const navigate = useNavigate();
@@ -30,7 +51,7 @@ const AuthProvider = ({ children }) => {
         setAuth(data);
         navigate("/proyectos");
       } catch (error) {
-        setAuth({});
+        setAuth(INITIAL_VALUES.usuario);
       } finally {
         setCargando(false);
       }

@@ -1,9 +1,9 @@
-import useProyectos from "../hooks/useProyectos";
 
-// eslint-disable-next-line react/prop-types
-const Colaborador = ({ colaborador }) => {
+import useProyectos from "../hooks/useProyectos";
+import { Usuario } from "../types/Usuarios";
+
+const Colaborador = ({colaborador}: {colaborador: Usuario}) => {
   const { handleModalEliminarColaborador } = useProyectos();
-  // eslint-disable-next-line react/prop-types
   const { nombre, email } = colaborador;
   return (
     <div className=" border-b p-5 flex justify-between items-center">

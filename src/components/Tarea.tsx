@@ -1,9 +1,12 @@
 import { formatearFecha } from "../helpers/formatearFecha";
 import useProyectos from "../hooks/useProyectos";
+import { Tarea } from "../types/Tareas";
 
-// eslint-disable-next-line react/prop-types
-const Tarea = ({ tarea }) => {
-  // eslint-disable-next-line react/prop-types
+interface Props {
+  tarea : Tarea
+}
+
+const Tarea = ({ tarea } : Props) => {
   const { descripcion, nombre, prioridad, fechaEntrega, estado } = tarea;
   const { handleModalEditarTarea, handleModalEliminarTarea } = useProyectos();
 
@@ -13,7 +16,7 @@ const Tarea = ({ tarea }) => {
         <p className="mb-1 text-xl">{nombre}</p>
         <p className="mb-1 text-sm uppercase text-gray-500">{descripcion}</p>
         <p className="mb-1 text-xl">{prioridad}</p>
-        <p className="mb-1 text-gray-500">{formatearFecha(fechaEntrega)}</p>
+        <p className="mb-1 text-gray-500">{formatearFecha(fechaEntrega.toString())}</p>
       </div>
       <div className="flex gap-2 flex-wrap">
         <button

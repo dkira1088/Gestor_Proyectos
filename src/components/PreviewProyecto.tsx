@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
 
-const PreviewProyecto = ({ proyecto }) => {
+interface Props {
+  proyecto :{
+    nombre?:string,
+    _id?:string,
+    cliente?:string
+  }
+}
+
+const PreviewProyecto = ({ proyecto } : Props) => {
   const { nombre, _id, cliente } = proyecto;
   return (
     <div className="border-b p-5 flex">

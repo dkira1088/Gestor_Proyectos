@@ -1,21 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useProyectos from "../hooks/useProyectos";
 import { useParams } from "react-router-dom";
-import Spinner from "../components/common/spinner";
+import Spinner from "../components/common/Spinner";
 import FormularioProyectos from "../components/FormularioProyectos";
 
 const EditarProyecto = () => {
   const { proyecto, obtenerProyecto, cargando, eliminarProyecto } =
     useProyectos();
+
+    const [proyectoId, setProyectoId] = useState('');
   const { id } = useParams();
 
   useEffect(() => {
-    obtenerProyecto(id);
+    if(id) {
+      setProyectoId(id);
+    }
   }, []);
+
+  useEffect(()=>{
+    obtenerProyecto(proyectoId);
+  },[proyectoId])
 
   const handleClick = () => {
     if (confirm("Desea eliminar el proyecto?")) {
-      eliminarProyecto(id);
+      eliminarProyecto(proyectoId);
     }
   };
   return cargando ? (
